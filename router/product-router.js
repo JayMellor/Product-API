@@ -24,7 +24,7 @@ module.exports = () => {
         .post(controller.addProduct)
         .get(controller.getProducts);
 
-    productRouter.use('/products/:productId', controller.findProduct);
+    productRouter.use('/products/:productId', controller.findProductById);
 
     productRouter.route('/products/:productId')
         .get(controller.getProduct)

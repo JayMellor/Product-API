@@ -4,38 +4,15 @@
 const Product = require('../models/product-model');
 const httpStatus = require('http-status');
 
-const verifyRequest = (request, options) => {
-
-    let requestIsValid = true;
-
-    Object.entries(request.body).forEach((item) => {
-        const key = item[0];
-        const value = item[1];
-
-        const matchingKey = options.find((option) => option === key);
-
-        if (!matchingKey) {
-            requestIsValid = false;
-        }
-        if (!value) {
-            requestIsValid = false;
-        }
-
-    });
-
-    return requestIsValid;
-
-}
-
 const addProduct = (request, response) => {
 
-    if (!request.body.partNumber || request.body.partNumber === ''){
+    if (!request.body.partNumber || request.body.partNumber === '') {
         return response.status(httpStatus.BAD_REQUEST).send('Part number required');
     }
-    if (!request.body.description || request.body.description === ''){
+    if (!request.body.description || request.body.description === '') {
         return response.status(httpStatus.BAD_REQUEST).send('Description required');
     }
-    if (!request.body.price){
+    if (!request.body.price) {
         return response.status(httpStatus.BAD_REQUEST).send('Price required');
     }
 
@@ -63,10 +40,8 @@ const getProducts = (request, response) => {
  * @param {function} next next function that proceeds flow to
  * next function in the list
  */
-const findProduct = (request, response, next) => {
-
+const findProductById = (request, response, next) => {
     Product.findById(request.params.productId, (error, product) => {
-
         if (error) {
             return response.send(error);
         }
@@ -77,22 +52,39 @@ const findProduct = (request, response, next) => {
         else {
             return response.sendStatus(httpStatus.NOT_FOUND);
         }
-    })
+    });
 
 };
 
 const getProduct = (request, response) => {
-
     return response.status(httpStatus.OK).json(request.product);
 
 };
 
 const updateProduct = (request, response) => {
 
+    const { product } = request;
+
+    product.partNumber = request.body.partNumber;
+    product.description = request.body.description;
+    product.price = request.body.price;
+
+    return request.product.save((error) => {
+        if (error) {
+            return response.send(error);
+        }
+        return response.json(product);
+    });
+
 };
 
 const deleteProduct = (request, response) => {
-
+    request.product.remove((error) => {
+        if (error) {
+            return response.send(error);
+        }
+        return response.sendStatus(httpStatus.NO_CONTENT);
+    })
 };
 
-module.exports = { addProduct, getProducts, findProduct, getProduct, updateProduct, deleteProduct };
+module.exports = { addProduct, getProducts, findProductById, getProduct, updateProduct, deleteProduct };
