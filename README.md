@@ -2,9 +2,12 @@
 
 A simple product CRUD API for interfacing with a MongoDB database.
 
-Schema:
+Uses the following schema:
 
-partNumber,
-description,
-price,
-imageURL
+````JavaScript
+const productModel = new Schema({
+    partNumber: { type: String },
+    description: { type: String },
+    price: {type: Number},
+    imageURL: {type: String}
+});
